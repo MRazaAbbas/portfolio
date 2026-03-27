@@ -245,84 +245,221 @@ export default function App() {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center p-2 sm:p-4 bg-[#0d1117]">
-      <motion.div 
-        initial={{ opacity: 0, scale: 0.95 }}
-        animate={{ opacity: 1, scale: 1 }}
-        className="w-full max-w-4xl h-[85vh] sm:h-[600px] bg-[#161b22] rounded-lg shadow-2xl border border-[#30363d] overflow-hidden flex flex-col"
-        onClick={() => inputRef.current?.focus()}
-      >
-        {/* Terminal Header */}
-        <div className="bg-[#21262d] px-3 sm:px-4 py-2 flex items-center justify-between border-b border-[#30363d] flex-shrink-0">
-          <div className="flex items-center gap-2 overflow-hidden">
-            <div className="flex gap-1.5 flex-shrink-0">
-              <div className="w-2.5 h-2.5 sm:w-3 h-3 rounded-full bg-[#ff5f56]"></div>
-              <div className="w-2.5 h-2.5 sm:w-3 h-3 rounded-full bg-[#ffbd2e]"></div>
-              <div className="w-2.5 h-2.5 sm:w-3 h-3 rounded-full bg-[#27c93f]"></div>
-            </div>
-            <div className="ml-2 sm:ml-4 flex items-center gap-2 text-gray-400 text-[10px] sm:text-xs font-medium truncate">
-              <TerminalIcon size={12} className="sm:w-[14px] sm:h-[14px]" />
-              <span className="truncate">mra@portfolio — -zsh</span>
-            </div>
+    <div className="min-h-screen desktop-bg relative overflow-hidden flex flex-col font-sans">
+      {/* macOS Notch */}
+      <div className="mac-notch hidden lg:block"></div>
+
+      {/* Top Menu Bar */}
+      <div className="menu-bar h-7 w-full flex items-center justify-between px-4 text-white text-[12px] font-medium z-50">
+        <div className="flex items-center gap-4">
+          <div className="text-[14px] font-bold"></div>
+          <div className="font-bold">Finder</div>
+          <div className="hidden sm:block">File</div>
+          <div className="hidden sm:block">Edit</div>
+          <div className="hidden sm:block">View</div>
+          <div className="hidden sm:block">Go</div>
+          <div className="hidden sm:block">Window</div>
+          <div className="hidden sm:block">Help</div>
+        </div>
+        <div className="flex items-center gap-4">
+          <div className="hidden xs:flex items-center gap-3">
+            <span>🔋 91%</span>
+            <span>📶</span>
+            <span>🔊</span>
           </div>
-          <div className="text-gray-500 text-[8px] sm:text-[10px] uppercase tracking-widest font-bold hidden xs:block">
-            Secure Shell
+          <div className="font-semibold">Sat 20 May 12:03</div>
+        </div>
+      </div>
+
+      {/* Desktop Content */}
+      <div className="flex-1 relative p-4 sm:p-6 flex flex-col items-end gap-4">
+        {/* Desktop Icons (Top Right) */}
+        <div className="flex flex-col gap-2 z-10">
+          <div className="desktop-icon" onClick={() => handleCommand('whoami')}>
+            <img 
+              src="https://raw.githubusercontent.com/Pravasith/macOS-Big-Sur-Icons/main/Hard%20Drive.png" 
+              alt="Mac" 
+              className="w-14 h-14 drop-shadow-md"
+              onError={(e) => {
+                e.currentTarget.src = "https://picsum.photos/seed/disk/64/64";
+              }}
+              referrerPolicy="no-referrer"
+            />
+            <span>Macintosh HD</span>
+          </div>
+          <div className="desktop-icon" onClick={() => handleCommand('about')}>
+            <img 
+              src="https://raw.githubusercontent.com/Pravasith/macOS-Big-Sur-Icons/main/Safari.png" 
+              alt="Safari" 
+              className="w-12 h-12 drop-shadow-md"
+              onError={(e) => {
+                e.currentTarget.src = "https://picsum.photos/seed/safari/64/64";
+              }}
+              referrerPolicy="no-referrer"
+            />
+            <span>About Me</span>
           </div>
         </div>
 
-        {/* Terminal Body */}
-        <div 
-          ref={scrollRef}
-          className="flex-1 overflow-y-auto p-4 sm:p-6 font-mono text-xs sm:text-sm space-y-2 scroll-smooth"
-        >
-          <AnimatePresence mode="popLayout">
-            {history.map((item, i) => (
-              <motion.div 
-                key={i}
-                initial={{ opacity: 0, x: -10 }}
-                animate={{ opacity: 1, x: 0 }}
-                transition={{ duration: 0.2 }}
-                className={`${item.type === 'command' ? 'text-green-400' : 'text-gray-300'} break-words`}
-              >
-                {item.content}
-              </motion.div>
-            ))}
-          </AnimatePresence>
-
-          {!isBooting && (
-            <form onSubmit={handleSubmit} className="flex items-start sm:items-center gap-2 mt-2">
-              <span className="text-green-400 flex-shrink-0 whitespace-nowrap">guest@mra:~$</span>
-              <div className="flex-1 relative flex items-center">
-                <input
-                  ref={inputRef}
-                  type="text"
-                  value={input}
-                  onChange={(e) => setInput(e.target.value)}
-                  autoFocus
-                  className="w-full bg-transparent outline-none text-gray-300 border-none p-0 focus:ring-0"
-                  spellCheck={false}
-                  autoComplete="off"
-                />
-                {input === '' && <span className="cursor flex-shrink-0"></span>}
+        {/* Terminal Window (Centered) */}
+        <div className="absolute inset-0 flex items-center justify-center z-20 pointer-events-none p-4">
+          <motion.div 
+            initial={{ opacity: 0, scale: 0.95, y: 20 }}
+            animate={{ opacity: 1, scale: 1, y: 0 }}
+            className="w-full max-w-4xl h-[70vh] sm:h-[550px] bg-[#161b22]/90 backdrop-blur-xl rounded-xl mac-window-shadow border border-[#30363d] overflow-hidden flex flex-col pointer-events-auto"
+            onClick={() => inputRef.current?.focus()}
+          >
+            {/* Terminal Header */}
+            <div className="bg-[#21262d] px-3 sm:px-4 py-2 flex items-center justify-between border-b border-[#30363d] flex-shrink-0">
+              <div className="flex items-center gap-2 overflow-hidden">
+                <div className="flex gap-2 flex-shrink-0">
+                  <div className="w-3 h-3 rounded-full bg-[#ff5f56] border border-black/10"></div>
+                  <div className="w-3 h-3 rounded-full bg-[#ffbd2e] border border-black/10"></div>
+                  <div className="w-3 h-3 rounded-full bg-[#27c93f] border border-black/10"></div>
+                </div>
+                <div className="ml-2 sm:ml-4 flex items-center gap-2 text-gray-400 text-[10px] sm:text-xs font-medium truncate">
+                  <TerminalIcon size={12} className="sm:w-[14px] sm:h-[14px]" />
+                  <span className="truncate font-mono">muhammad-raza-abbas — -zsh</span>
+                </div>
               </div>
-            </form>
-          )}
-        </div>
+              <div className="text-gray-500 text-[8px] sm:text-[10px] uppercase tracking-widest font-bold hidden xs:block font-mono">
+                Secure Shell
+              </div>
+            </div>
 
-        {/* Terminal Footer */}
-        <div className="bg-[#0d1117] px-3 sm:px-4 py-1 border-t border-[#30363d] flex justify-between items-center text-[8px] sm:text-[10px] text-gray-500 flex-shrink-0">
-          <div className="flex gap-3 sm:gap-4">
-            <span className="flex items-center gap-1"><Shield size={10} /> Secure</span>
-            <span className="flex items-center gap-1"><Cpu size={10} /> MUET_OS</span>
+            {/* Terminal Body */}
+            <div 
+              ref={scrollRef}
+              className="flex-1 overflow-y-auto p-4 sm:p-6 font-mono text-xs sm:text-sm space-y-2 scroll-smooth"
+            >
+              <AnimatePresence mode="popLayout">
+                {history.map((item, i) => (
+                  <motion.div 
+                    key={i}
+                    initial={{ opacity: 0, x: -10 }}
+                    animate={{ opacity: 1, x: 0 }}
+                    transition={{ duration: 0.2 }}
+                    className={`${item.type === 'command' ? 'text-green-400' : 'text-gray-300'} break-words`}
+                  >
+                    {item.content}
+                  </motion.div>
+                ))}
+              </AnimatePresence>
+
+              {!isBooting && (
+                <form onSubmit={handleSubmit} className="flex items-start sm:items-center gap-2 mt-2">
+                  <span className="text-green-400 flex-shrink-0 whitespace-nowrap">guest@mra:~$</span>
+                  <div className="flex-1 relative flex items-center">
+                    <input
+                      ref={inputRef}
+                      type="text"
+                      value={input}
+                      onChange={(e) => setInput(e.target.value)}
+                      autoFocus
+                      className="w-full bg-transparent outline-none text-gray-300 border-none p-0 focus:ring-0"
+                      spellCheck={false}
+                      autoComplete="off"
+                    />
+                    {input === '' && <span className="cursor flex-shrink-0"></span>}
+                  </div>
+                </form>
+              )}
+            </div>
+
+            {/* Terminal Footer */}
+            <div className="bg-[#0d1117] px-3 sm:px-4 py-1 border-t border-[#30363d] flex justify-between items-center text-[8px] sm:text-[10px] text-gray-500 flex-shrink-0 font-mono">
+              <div className="flex gap-3 sm:gap-4">
+                <span className="flex items-center gap-1"><Shield size={10} /> Secure</span>
+                <span className="flex items-center gap-1"><Cpu size={10} /> MUET_OS</span>
+              </div>
+              <div>UTF-8</div>
+            </div>
+          </motion.div>
+        </div>
+      </div>
+
+      {/* macOS Dock */}
+      <div className="fixed bottom-4 left-1/2 -translate-x-1/2 z-50">
+        <div className="dock-container">
+          <div className="dock-item active" onClick={() => handleCommand('ls')}>
+            <img 
+              src="https://raw.githubusercontent.com/Pravasith/macOS-Big-Sur-Icons/main/Finder.png" 
+              alt="Finder" 
+              className="w-10 h-10 sm:w-12 sm:h-12"
+              onError={(e) => {
+                e.currentTarget.src = "https://picsum.photos/seed/finder/64/64";
+              }}
+              referrerPolicy="no-referrer"
+            />
           </div>
-          <div>UTF-8</div>
+          <div className="dock-item" onClick={() => handleCommand('exp')}>
+            <img 
+              src="https://raw.githubusercontent.com/Pravasith/macOS-Big-Sur-Icons/main/Notes.png" 
+              alt="Notes" 
+              className="w-10 h-10 sm:w-12 sm:h-12"
+              onError={(e) => {
+                e.currentTarget.src = "https://picsum.photos/seed/notes/64/64";
+              }}
+              referrerPolicy="no-referrer"
+            />
+          </div>
+          <div className="dock-item" onClick={() => handleCommand('about')}>
+            <img 
+              src="https://raw.githubusercontent.com/Pravasith/macOS-Big-Sur-Icons/main/Safari.png" 
+              alt="Safari" 
+              className="w-10 h-10 sm:w-12 sm:h-12"
+              onError={(e) => {
+                e.currentTarget.src = "https://picsum.photos/seed/safari/64/64";
+              }}
+              referrerPolicy="no-referrer"
+            />
+          </div>
+          <div className="dock-item" onClick={() => handleCommand('skills')}>
+            <img 
+              src="https://raw.githubusercontent.com/Pravasith/macOS-Big-Sur-Icons/main/System%20Preferences.png" 
+              alt="Settings" 
+              className="w-10 h-10 sm:w-12 sm:h-12"
+              onError={(e) => {
+                e.currentTarget.src = "https://picsum.photos/seed/settings/64/64";
+              }}
+              referrerPolicy="no-referrer"
+            />
+          </div>
+          <div className="dock-item" onClick={() => handleCommand('certs')}>
+            <img 
+              src="https://raw.githubusercontent.com/Pravasith/macOS-Big-Sur-Icons/main/App%20Store.png" 
+              alt="App Store" 
+              className="w-10 h-10 sm:w-12 sm:h-12"
+              onError={(e) => {
+                e.currentTarget.src = "https://picsum.photos/seed/appstore/64/64";
+              }}
+              referrerPolicy="no-referrer"
+            />
+          </div>
+          <div className="dock-item" onClick={() => handleCommand('contact')}>
+            <img 
+              src="https://raw.githubusercontent.com/Pravasith/macOS-Big-Sur-Icons/main/Mail.png" 
+              alt="Mail" 
+              className="w-10 h-10 sm:w-12 sm:h-12"
+              onError={(e) => {
+                e.currentTarget.src = "https://picsum.photos/seed/mail/64/64";
+              }}
+              referrerPolicy="no-referrer"
+            />
+          </div>
+          <div className="w-[1px] h-10 bg-white/20 mx-1"></div>
+          <div className="dock-item active" onClick={() => handleCommand('help')}>
+            <img 
+              src="https://raw.githubusercontent.com/Pravasith/macOS-Big-Sur-Icons/main/Terminal.png" 
+              alt="Terminal" 
+              className="w-10 h-10 sm:w-12 sm:h-12"
+              onError={(e) => {
+                e.currentTarget.src = "https://picsum.photos/seed/terminal/64/64";
+              }}
+              referrerPolicy="no-referrer"
+            />
+          </div>
         </div>
-      </motion.div>
-
-      {/* Background Decorative Elements */}
-      <div className="fixed inset-0 -z-10 overflow-hidden pointer-events-none opacity-20">
-        <div className="absolute top-1/4 left-1/4 w-96 h-96 bg-blue-500/10 rounded-full blur-3xl"></div>
-        <div className="absolute bottom-1/4 right-1/4 w-96 h-96 bg-purple-500/10 rounded-full blur-3xl"></div>
       </div>
     </div>
   );
